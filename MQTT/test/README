@@ -1,11 +1,225 @@
+# ESP32 + MQTT + Python + HiveMQ Cloud
 
-This directory is intended for PlatformIO Test Runner and project tests.
+Este proyecto demuestra cómo un **ESP32** puede publicar datos mediante **MQTT** hacia **HiveMQ Cloud**, mientras que una aplicación escrita en **Python** recibe esos datos en tiempo real y los grafica.
 
-Unit Testing is a software testing method by which individual units of
-source code, sets of one or more MCU program modules together with associated
-control data, usage procedures, and operating procedures, are tested to
-determine whether they are fit for use. Unit testing finds problems early
-in the development cycle.
+---
 
-More information about PlatformIO Unit Testing:
-- https://docs.platformio.org/en/latest/advanced/unit-testing/index.html
+# Arquitectura
+
+```
+            ESP32
+
+   Voltaje
+   Corriente
+   Potencia
+
+        │
+        │ MQTT Publish
+        ▼
+
+     HiveMQ Cloud
+
+        │
+        │ MQTT Subscribe
+        ▼
+
+     Python Logger
+
+        │
+        ▼
+
+ Gráficos en tiempo real
+```
+
+---
+
+# Datos enviados
+
+El ESP32 publica cada 10 segundos un mensaje JSON.
+
+```json
+{
+    "voltaje":220.5,
+    "corriente":5.2,
+    "potencia":1146.6
+}
+```
+
+Topic utilizado
+
+```
+medidor1/datos
+```
+
+---
+
+# Requisitos
+
+Instalar Python 3.10 o superior.
+
+Verificar la instalación:
+
+```
+python --version
+```
+
+o
+
+```
+py --version
+```
+
+---
+
+# Instalar dependencias
+
+Abrir una consola y ejecutar:
+
+```
+pip install paho-mqtt
+```
+
+```
+pip install matplotlib
+```
+
+o instalar todo junto:
+
+```
+pip install paho-mqtt matplotlib
+```
+
+---
+
+# Librerías utilizadas
+
+## paho-mqtt
+
+Cliente MQTT para Python.
+
+Permite:
+
+- Conectarse al broker
+- Publicar mensajes
+- Suscribirse a Topics
+- Recibir mensajes mediante Callbacks
+
+---
+
+## matplotlib
+
+Biblioteca para realizar gráficos.
+
+En este proyecto se utiliza para mostrar:
+
+- Voltaje
+- Corriente
+- Potencia
+
+en tiempo real.
+
+---
+
+# Configuración
+
+Modificar las siguientes variables en el programa Python.
+
+```python
+BROKER = "xxxxxxxxxxxxxxxx.s1.eu.hivemq.cloud"
+
+PORT = 8883
+
+USERNAME = "usuario"
+
+PASSWORD = "password"
+
+TOPIC = "medidor1/datos"
+```
+
+---
+
+# Ejecutar
+
+Desde la consola:
+
+```
+py logger.py
+```
+
+o
+
+```
+python logger.py
+```
+
+---
+
+# Funcionamiento
+
+1. El programa se conecta a HiveMQ Cloud.
+
+2. Se suscribe al Topic:
+
+```
+medidor1/datos
+```
+
+3. Cada vez que llega un mensaje MQTT:
+
+- Se decodifica el JSON.
+- Se extraen las variables.
+- Se almacenan en memoria.
+- Se actualizan los gráficos.
+
+---
+
+# Formato esperado del JSON
+
+```json
+{
+    "voltaje":220.5,
+    "corriente":5.4,
+    "potencia":1190
+}
+```
+
+---
+
+# Variables recibidas
+
+| Variable | Unidad |
+|----------|---------|
+| voltaje | V |
+| corriente | A |
+| potencia | W |
+
+---
+
+# Salida
+
+El programa genera tres gráficos independientes:
+
+- Voltaje
+- Corriente
+- Potencia
+
+actualizados automáticamente conforme llegan nuevos datos MQTT.
+
+---
+
+# Tecnologías utilizadas
+
+- ESP32
+- PlatformIO
+- MQTT
+- HiveMQ Cloud
+- Python
+- Paho MQTT
+- Matplotlib
+- JSON
+
+---
+
+# Autor
+
+Proyecto desarrollado como ejemplo práctico para el curso de **ESP32 + FreeRTOS + IoT**.
